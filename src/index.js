@@ -2,7 +2,7 @@
 const { config } = require('dotenv');
 const { connect } = require('./database/index');
 //const { initialize } = require('./config/db');
-//const { makeServer } = require('./server');
+const { makeServer } = require('./server');
 
 async function main() {
     config();
