@@ -3,14 +3,13 @@ const { getModel } = require('../database');
 const { verifyToken } = require('../middlewares/middlewares');
 
 
-function createPersonajeRouter(params) {
+function createPeliculaRouter(params) {
     const router = new Router();
 
-    router.get('/characters/', verifyToken, async (req, res) => {
+    router.get('/movies/', verifyToken, async (req, res) => {
         try {
-            const Pelicula = getModel('Pelicula');
-            const data = await getModel('Personaje').findAll({
-                include: [Pelicula]
+            const data = await getModel('Pelicula').findAll({
+                attributes: [imagen, titulo, fecha]
             });
             res.status(200).json(data);
         }
@@ -18,64 +17,63 @@ function createPersonajeRouter(params) {
             res.status(500).send({ message: error.message });
         }
     });
-    router.get('/characters/:id', verifyToken, async (req, res) => {
+    router.get('/movies/:id', verifyToken, async (req, res) => {
         try {
-            const Pelicula = getModel('Pelicula');
-            const data = await getModel('Personaje').findOne({
+            const data = await getModel('Pelicula').findOne({
                 where: { id: req.params.id },
-                include: [Pelicula]
+            
             });
             if (data) {
                 res.status(200).json(data);
             } else {
-                res.status(404).send(`Personaje with id ${req.params.id} does not exist.`);
+                res.status(404).send(`Pelicula with id ${req.params.id} does not exist.`);
             }
         } catch (error) {
             res.status(500).send({ message: error.message });
         }
     }
     );
-    router.post('/characters/', verifyToken, async (req, res) => {
+    router.post('/movies/', verifyToken, async (req, res) => {
         try {
-            const Personaje = getModel('Personaje');
-            const data = new Personaje(req.body);
+            const Pelicula = getModel('Pelicula');
+            const data = new Pelicula(req.body);
             const saved = await data.save();
             if (saved) {
                 res.status(201).json(saved);
             } else {
-                res.status(500).send('Could not save the character.');
+                res.status(500).send('Could not save the movie.');
             }
         } catch (error) {
             res.status(500).send({ message: error.message });
         }
     });
-    router.put('/characters/:id', verifyToken, async (req, res) => {
+    router.put('/movies/:id', verifyToken, async (req, res) => {
         try {
-            const data = await getModel('Personaje').findOne({
+            const data = await getModel('Pelicula').findOne({
                 where: {
                     id: req.params.id
                 }
             });
             const updated = await data.update(req.body);
             if (updated) {
-                res.status(200).send('Character updated');
+                res.status(200).send('Movie updated');
             } else {
-                res.status(404).send(`Character with id ${req.params.id} does not exist.`);
+                res.status(404).send(`Movie with id ${req.params.id} does not exist.`);
             }
         } catch (error) {
             res.status(500).send({ message: error.message });
         }
     });
-    router.delete('/characters/:id', verifyToken, async (req, res) => {
+    router.delete('/movies/:id', verifyToken, async (req, res) => {
         try {
-            const data = await getModel('Personaje').findOne({
+            const data = await getModel('Pelicula').findOne({
                 where: { id: req.params.id }
             });
             await data.destroy();
             if (data) {
-                res.status(200).send('Character deleted');
+                res.status(200).send('Movie deleted');
             } else {
-                res.status(404).send(`Character with id ${req.params.id} does not exist.`);
+                res.status(404).send(`Movie with id ${req.params.id} does not exist.`);
             }
         } catch (error) {
             res.status(500).send({ message: error.message });
@@ -85,5 +83,5 @@ function createPersonajeRouter(params) {
 }
 
 module.exports = {
-    createPersonajeRouter
+    createPeliculaRouter
 };

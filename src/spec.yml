@@ -1,0 +1,332 @@
+openapi: 3.0.1
+title: Sample API
+description: This is a sample server for a restaurant.
+termsOfService: http://example.com/terms/
+contact:
+  name: API Support
+  url: http://www.example.com/support
+  email: support@example.com
+license:
+  name: Apache 2.0
+  url: https://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: http://localhost:5000/api/v1
+    description: Development server
+paths:
+  /auth/register:
+    post:
+      summary: Creates a user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/newuser'
+      responses: 
+        '201':
+          description: Now you can log in.
+        '403':
+          description: Use another email account 
+      tags:
+        - newuser
+  /auth/login:
+    post:
+      summary: Initiates user's session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'          
+      responses:
+        '200':
+          description: Token
+        '401':
+          description: Wrong information
+      tags:
+        - user
+  /characters:
+    get:
+      security:
+        - bearerAuth: []
+      description: Shows all the characters
+      summary: Shows characters.
+      responses:
+        '200':
+          description: array of characters
+          content:
+            application/json:
+              schema: 
+                type: array
+                items: 
+                  type: string
+      tags:
+        - user
+    post:
+      security:
+        - bearerAuth: []
+      description: It allows the admin to add more characters
+      summary: add more characters
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/addCharacters'
+      responses:
+        '200':
+          description: Characters
+        '401':
+          description: Could not save the character.
+      tags:
+        - user
+  /characters/{id}:
+    get:
+      security:
+        - bearerAuth: []
+      description: It allows the admin to see each character
+      summary: Shows a character
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: character's id
+      responses:
+        '200':
+          description: character
+        '401':
+          description: character with id  does not exist.
+      tags:
+        - user
+    put:
+      security:
+        - bearerAuth: []
+      description: It allows the user to modify each character
+      summary: edit character
+      parameters: 
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: character's id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/editCharacters'
+      responses:
+        '200':
+          description: character updated.
+        '403':
+          description: You are not logged in.
+        '404':
+          description: character with id  does not exist.  
+      tags:
+        - user
+    delete:
+      security:
+        - bearerAuth: []
+      description: It allows the user to delete a character
+      summary: deletes a character
+      parameters: 
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: character's id
+      responses:
+        '200':
+          description: character deleted
+        '403':
+          description: You are not logged in.
+        '404':
+          description: character with id does not exist. 
+      tags:
+        - user
+  /movies:
+    get:
+      security:
+        - bearerAuth: []
+      description: Shows all the movies
+      summary: Shows movies.
+      responses:
+        '200':
+          description: array of movies
+          content:
+            application/json:
+              schema: 
+                type: array
+                items: 
+                  type: string
+      tags:
+        - user
+    post:
+      security:
+        - bearerAuth: []
+      description: It allows the user to add more movies
+      summary: add more movies
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/addMovies'
+      responses:
+        '200':
+          description: movies
+        '401':
+          description: Could not save the movies.
+      tags:
+        - user
+  /movies/{id}:
+    get:
+      security:
+        - bearerAuth: []
+      description: It allows the user to see each movies
+      summary: Shows a movies
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: movie's id
+      responses:
+        '200':
+          description: movies
+        '401':
+          description: movies with id  does not exist.
+      tags:
+        - user
+    put:
+      security:
+        - bearerAuth: []
+      description: It allows the user to modify each movies
+      summary: edit movies
+      parameters: 
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: movies's id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/editMovies'
+      responses:
+        '200':
+          description: movies updated.
+        '403':
+          description: You are not logged in.
+        '404':
+          description: movies with id  does not exist.  
+      tags:
+        - user
+    delete:
+      security:
+        - bearerAuth: []
+      description: It allows the user to delete a movies
+      summary: deletes a movies
+      parameters: 
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: movies's id
+      responses:
+        '200':
+          description: movies deleted
+        '403':
+          description: You are not logged in.
+        '404':
+          description: movies with id does not exist. 
+      tags:
+        - user
+components:
+  securitySchemes:
+    bearerAuth:            # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    newuser:
+      properties:
+        username: 
+          type: string
+        email: 
+          type: email
+        password: 
+          type: string   
+    User:
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    addCharacters:
+      properties:
+        nombre:
+          type: string
+        imagen:
+          type: integer
+        edad:
+          type: string
+        peso:
+          type: integer
+        historia:
+          type: string
+    editCharacters:
+      parameters: 
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: Character's id
+      properties:
+        nombre:
+          type: string
+        imagen:
+          type: integer
+        edad:
+          type: string
+        peso:
+          type: integer
+        historia:
+          type: string
+    addMovies:
+      properties:
+        titulo:
+          type: string
+        imagen:
+          type: integer
+        fecha:
+          type: string
+        calificacion:
+          type: integer
+    editMovies:
+      parameters: 
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: movie's id
+      properties:
+        titulo:
+          type: string
+        imagen:
+          type: integer
+        fecha:
+          type: string
+        calificacion:
+          type: integer
